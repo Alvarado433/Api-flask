@@ -63,7 +63,7 @@ def home():
     return jsonify({"mensagem": "Bem-vindo à API"})
 
 # Registro dos blueprints
-servidor.register_blueprint(usuario_bp)
+servidor.register_blueprint(usuario_bp, url_prefix='/usuarios')
 servidor.register_blueprint(nivel_bp)
 servidor.register_blueprint(produto_bp)
 servidor.register_blueprint(imagem_bp)
