@@ -81,4 +81,4 @@ servidor.register_blueprint(email_bp)
 
 # Execução da aplicação
 if __name__ == "__main__":
-    servidor.run(host="0.0.0.0", port=5000, debug=True)
+    servidor.run(host="0.0.0.0", port=5000)
