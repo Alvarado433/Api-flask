@@ -72,4 +72,4 @@ def deletar_usuario(id):
     usuario = Usuario.query.get_or_404(id)
     Db.session.delete(usuario)
     Db.session.commit()
-    return jsonify({"mensagem": "Usuário deletado"})
+    return jsonify({"mensagem": "Usuário deletado"})  
