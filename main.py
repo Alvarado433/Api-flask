@@ -3,7 +3,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from conexao import Db
-from conexao.conexao import configuracao
+
+from conexao.conexao import Configuracao
 from conexao.email import mail  # mail agora vindo do arquivo extensoes.py
 
 # Importação dos blueprints
@@ -28,7 +29,7 @@ from rotas.EmailController import email_bp
 servidor = Flask(__name__)
 
 # Configurações gerais
-servidor.config.from_object(configuracao)
+servidor.config.from_object(Configuracao)
 
 # Configuração do JWT
 servidor.config["JWT_SECRET_KEY"] = "minha_chave_secreta"
