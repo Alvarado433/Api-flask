@@ -1,4 +1,3 @@
-import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -63,7 +62,7 @@ def home():
     return jsonify({"mensagem": "Bem-vindo à API"})
 
 # Registro dos blueprints
-servidor.register_blueprint(usuario_bp, url_prefix='/usuarios')
+servidor.register_blueprint(usuario_bp)
 servidor.register_blueprint(nivel_bp)
 servidor.register_blueprint(produto_bp)
 servidor.register_blueprint(imagem_bp)
@@ -82,5 +81,4 @@ servidor.register_blueprint(email_bp)
 
 # Execução da aplicação
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Usa a porta do ambiente ou 5000 local
-    servidor.run(host="0.0.0.0", port=port, debug=True)
+    servidor.run(host="0.0.0.0", port=5000, debug=True)
