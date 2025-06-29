@@ -30,14 +30,14 @@ servidor = Flask(__name__)
 
 # Configurações gerais
 servidor.config.from_object(Configuracao)
-
 # Configuração do JWT
-servidor.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "minha_chave_secreta")
+servidor.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Nunca use valor fixo no código
 servidor.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 servidor.config["JWT_ACCESS_COOKIE_PATH"] = "/"
-servidor.config["JWT_COOKIE_SECURE"] = False  # Em produção, mude para True e configure HTTPS
-servidor.config["JWT_COOKIE_CSRF_PROTECT"] = False
 
+servidor.config["JWT_COOKIE_SECURE"] = True  # Obriga cookies a serem enviados apenas em HTTPS
+servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"  # Ou "Strict" se quiser ser mais restritivo
+servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção contra CSRF ativada
 jwt = JWTManager(servidor)
 
 # Configuração do CORS
