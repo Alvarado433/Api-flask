@@ -41,7 +41,19 @@ servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção contra CSRF ativ
 jwt = JWTManager(servidor)
 
 # Configuração do CORS
-CORS(servidor, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:3000"}})
+CORS(
+    servidor,
+    supports_credentials=True,
+    resources={
+        r"/*": {
+            "origins": [
+                "http://localhost:3000",  # desenvolvimento local
+                "https://imperio-store-alvaradorhaian766-8005-rhaians-projects.vercel.app",
+                "https://imperio-store-oelig7jhh-rhaians-projects.vercel.app"
+            ]
+        }
+    }
+)
 
 # Configurações do e-mail (Gmail)
 servidor.config['MAIL_SERVER'] = 'smtp.gmail.com'
