@@ -30,26 +30,24 @@ servidor = Flask(__name__)
 
 # Configurações gerais
 servidor.config.from_object(Configuracao)
+
 # Configuração do JWT
 servidor.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Nunca use valor fixo no código
 servidor.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 servidor.config["JWT_ACCESS_COOKIE_PATH"] = "/"
-
-servidor.config["JWT_COOKIE_SECURE"] = True  # Obriga cookies a serem enviados apenas em HTTPS
-servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"  # Ou "Strict" se quiser ser mais restritivo
-servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção contra CSRF ativada
+servidor.config["JWT_COOKIE_SECURE"] = True  # Só envia cookies via HTTPS
+servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"  # Ou "Strict" para mais restrito
+servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção CSRF ativada
 jwt = JWTManager(servidor)
 
-# Configuração do CORS
+# Configuração do CORS: liberar **apenas** domínio de produção
 CORS(
     servidor,
     supports_credentials=True,
     resources={
         r"/*": {
             "origins": [
-                "http://localhost:3000",  # desenvolvimento local
-                "https://imperio-store-alvaradorhaian766-8005-rhaians-projects.vercel.app",
-                "https://imperio-store-oelig7jhh-rhaians-projects.vercel.app"
+                "https://imperio-store.vercel.app"
             ]
         }
     }
@@ -91,7 +89,7 @@ servidor.register_blueprint(email_bp)
 def home():
     return jsonify({"mensagem": "Bem-vindo à API"})
 
-# Rodar localmente com porta dinâmica (útil para Railway e desenvolvimento)
+# Executa localmente ou no Railway com porta dinâmica
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     servidor.run(host="0.0.0.0", port=port)
