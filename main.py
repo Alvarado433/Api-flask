@@ -46,7 +46,7 @@ CORS(
     supports_credentials=True,
     resources={
         r"/*": {
-            "origins": ["https://imperio-store.vercel.app"]
+            "origins": ["https://imperio-store.vercel.app","http://localhost:3000/"]
         }
     }
 )
