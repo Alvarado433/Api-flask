@@ -44,12 +44,9 @@ jwt = JWTManager(servidor)
 CORS(
     servidor,
     supports_credentials=True,
-    resources={
-        r"/*": {
-            "origins": ["https://imperio-store.vercel.app","http://localhost:3000/"]
-        }
-    }
+    resources={r"/*": {"origins": ["https://imperio-store.vercel.app", "http://localhost:3000"]}},
 )
+
 
 # Configurações do e-mail (Gmail)
 servidor.config['MAIL_SERVER'] = 'smtp.gmail.com'
