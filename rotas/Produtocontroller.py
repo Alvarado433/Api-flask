@@ -162,3 +162,11 @@ def buscar_por_nome(slug):
         'formas_pagamento': produto.formas_pagamento.split(",") if produto.formas_pagamento else [],
         'imagens': imagens
     })
+
+@produto_bp.route('/produtos/desvincular-categoria/<int:categoria_id>', methods=['PUT'])
+def desvincular_categoria(categoria_id):
+    produtos = Produto.query.filter_by(categoria_id=categoria_id).all()
+    for p in produtos:
+        p.categoria_id = None
+    Db.session.commit()
+    return jsonify({"message": "Produtos desvinculados com sucesso"}), 200

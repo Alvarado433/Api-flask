@@ -90,3 +90,4 @@ def buscar_por_nome_listrar(nome):
         'categoria': categoria.dados(),
         'produtos': produtos
     }), 200
+    
