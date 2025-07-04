@@ -7,7 +7,7 @@ from conexao import Db
 from conexao.conexao import Configuracao
 from conexao.email import mail
 
-# Importação dos blueprints
+# Importação dos blueprints (exemplo)
 from rotas.usuarioController import usuario_bp
 from rotas.nivelController import nivel_bp
 from rotas.Produtocontroller import produto_bp
@@ -34,21 +34,24 @@ servidor.config.from_object(Configuracao)
 # Configuração do JWT
 servidor.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Nunca deixar hardcoded
 
-# Definindo comportamento para ambiente dev/prod
+# Configuração para desenvolvimento vs produção
 if os.getenv("FLASK_ENV") == "development":
-    servidor.config["JWT_COOKIE_SECURE"] = False  # localhost sem HTTPS
-    servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"
+    servidor.config["JWT_COOKIE_SECURE"] = False  # HTTP no localhost
+    servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"  # Funciona para localhost
 else:
-    servidor.config["JWT_COOKIE_SECURE"] = True   # produção com HTTPS
-    servidor.config["JWT_COOKIE_SAMESITE"] = "None"  # para cross-site cookies funcionarem
+    servidor.config["JWT_COOKIE_SECURE"] = True   # HTTPS em produção
+    servidor.config["JWT_COOKIE_SAMESITE"] = "None"  # Cross-site cookie permitido
 
+# DESATIVA CSRF para facilitar teste (habilitar somente se implementar token CSRF no frontend)
+servidor.config["JWT_COOKIE_CSRF_PROTECT"] = False
+
+# Localização dos tokens JWT no cookie
 servidor.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 servidor.config["JWT_ACCESS_COOKIE_PATH"] = "/"
-servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção CSRF ativada
 
 jwt = JWTManager(servidor)
 
-# Configuração do CORS
+# Configuração do CORS - permitir frontend específico e enviar cookies
 CORS(
     servidor,
     supports_credentials=True,
