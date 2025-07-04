@@ -28,9 +28,13 @@ def listar_cupons():
 def criar_cupom():
     data = request.json
 
-    # Valida campos obrigatórios
-    if not data.get("codigo") or not data.get("minPrice") or not data.get("statusId"):
-        return jsonify({"erro": "Campos obrigatórios: codigo, minPrice, statusId"}), 400
+    # Validação básica dos campos obrigatórios
+    if not data.get("codigo") or not data.get("statusId"):
+        return jsonify({"erro": "Campos obrigatórios: codigo, statusId"}), 400
+
+    # Se não for cupom frete grátis, minPrice obrigatório
+    if not data.get("freeShipping", False) and not data.get("minPrice"):
+        return jsonify({"erro": "Preço mínimo é obrigatório para cupons que não são frete grátis"}), 400
 
     status = Nivel.query.get(data["statusId"])
     if not status:
@@ -40,13 +44,25 @@ def criar_cupom():
     if data.get("validade"):
         validade = str_to_datetime_end_of_day(data["validade"])
 
+    # Se o cupom for frete grátis, anula esses campos para salvar None
+    if data.get("freeShipping", False):
+        min_price = None
+        max_price = None
+        desconto = None
+        descricao = None
+    else:
+        min_price = data["minPrice"]
+        max_price = data.get("maxPrice")
+        desconto = data.get("discount")
+        descricao = data.get("label")
+
     novo = Cupom(
         codigo=data["codigo"].upper(),
-        min_price=data["minPrice"],
-        max_price=data.get("maxPrice"),
-        desconto=data.get("discount"),
+        min_price=min_price,
+        max_price=max_price,
+        desconto=desconto,
         frete_gratis=data.get("freeShipping", False),
-        descricao=data.get("label"),
+        descricao=descricao,
         status_id=data["statusId"],
         validade=validade
     )
