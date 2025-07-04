@@ -25,19 +25,27 @@ from rotas.pedidocontroller import pedido_bp
 from rotas.cepcontroller import cep_bp
 from rotas.EmailController import email_bp
 
-# Inicialização da aplicação
+# Inicialização da aplicação Flask
 servidor = Flask(__name__)
 
-# Configurações gerais
+# Configurações gerais do app
 servidor.config.from_object(Configuracao)
+
 # Configuração do JWT
-servidor.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Nunca use valor fixo no código
+servidor.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")  # Nunca deixar hardcoded
+
+# Definindo comportamento para ambiente dev/prod
+if os.getenv("FLASK_ENV") == "development":
+    servidor.config["JWT_COOKIE_SECURE"] = False  # localhost sem HTTPS
+    servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"
+else:
+    servidor.config["JWT_COOKIE_SECURE"] = True   # produção com HTTPS
+    servidor.config["JWT_COOKIE_SAMESITE"] = "None"  # para cross-site cookies funcionarem
+
 servidor.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 servidor.config["JWT_ACCESS_COOKIE_PATH"] = "/"
+servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção CSRF ativada
 
-servidor.config["JWT_COOKIE_SECURE"] = True  # Obriga cookies a serem enviados apenas em HTTPS
-servidor.config["JWT_COOKIE_SAMESITE"] = "Lax"  # Ou "Strict" se quiser ser mais restritivo
-servidor.config["JWT_COOKIE_CSRF_PROTECT"] = True  # Proteção contra CSRF ativada
 jwt = JWTManager(servidor)
 
 # Configuração do CORS
@@ -46,7 +54,6 @@ CORS(
     supports_credentials=True,
     resources={r"/*": {"origins": ["https://imperio-store.vercel.app", "http://localhost:3000"]}},
 )
-
 
 # Configurações do e-mail (Gmail)
 servidor.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -57,11 +64,11 @@ servidor.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 
 mail.init_app(servidor)
 
-# Banco de dados e migrações
+# Inicializar DB e Migrate
 Db.init_app(servidor)
 migrate = Migrate(servidor, Db)
 
-# Registro dos blueprints
+# Registrar blueprints
 servidor.register_blueprint(usuario_bp)
 servidor.register_blueprint(nivel_bp)
 servidor.register_blueprint(produto_bp)
@@ -84,7 +91,8 @@ servidor.register_blueprint(email_bp)
 def home():
     return jsonify({"mensagem": "Bem-vindo à API"})
 
-# Rodar localmente com porta dinâmica (útil para Railway e desenvolvimento)
+# Rodar a aplicação
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    servidor.run(host="0.0.0.0", port=port)
+    debug_mode = os.getenv("FLASK_ENV") == "development"
+    servidor.run(host="0.0.0.0", port=port, debug=debug_mode)
